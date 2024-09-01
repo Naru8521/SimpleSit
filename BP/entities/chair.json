@@ -1,0 +1,72 @@
+{
+    "format_version": "1.12.0",
+    "minecraft:entity": {
+        "description": {
+            "identifier": "chair:chair",
+            "is_spawnable": false,
+            "is_summonable": true,
+            "is_experimental": false
+        },
+        "component_groups": {
+            "delete": {
+                "minecraft:instant_despawn": {}
+            }
+        },
+        "components": {
+            "minecraft:damage_sensor": {
+                "triggers": {
+                    "cause": "all",
+                    "deals_damage": false
+                }
+            },
+            "minecraft:is_stackable": {},
+            "minecraft:type_family": {
+                "family": [
+                    "chair",
+                    "mob"
+                ]
+            },
+            "minecraft:collision_box": {
+                "width": 0.1,
+                "height": 0.1
+            },
+            "minecraft:rideable": {
+                "seat_count": 1,
+                "interact_text": "座る",
+                "family_types": [
+                    "player"
+                ],
+                "seats": {
+                    "position": [
+                        0.0,
+                        0.0,
+                        0.0
+                    ]
+                }
+            },
+            "minecraft:health": {
+                "value": {
+                    "range_min": 1,
+                    "range_max": 1
+                }
+            },
+            "minecraft:physics": {
+                "has_collision": false,
+                "has_gravity": false
+            },
+            "minecraft:pushable": {
+                "is_pushable": false,
+                "is_pushable_by_piston": false
+            }
+        },
+        "events": {
+            "delete": {
+                "add": {
+                    "component_groups": [
+                        "delete"
+                    ]
+                }
+            }
+        }
+    }
+}
