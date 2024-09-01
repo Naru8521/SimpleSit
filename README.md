@@ -6,6 +6,8 @@
 
 アドオンのダウンロードは[コチラ](https://github.com/Naru8521/chair/releases)
 
+クラフターズコロニーは[コチラ](https://minecraft-mcworld.com/86891/)
+
 # 質問
 [ディスコードサーバー](https://discord.com/invite/Mfn8HRhUfm) で受け付けています
 
