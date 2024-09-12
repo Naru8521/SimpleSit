@@ -4,7 +4,7 @@
  
 階段やハーフブロック、その場に座ることができます
 
-アドオンのダウンロードは[コチラ](https://github.com/Naru8521/chair/releases)
+アドオンのダウンロードは[コチラ](https://github.com/Naru8521/Chair/releases)
 
 クラフターズコロニーは[コチラ](https://minecraft-mcworld.com/86891/)
 
