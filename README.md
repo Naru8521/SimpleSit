@@ -8,8 +8,8 @@
 
 クラフターズコロニーは[コチラ](https://minecraft-mcworld.com/86891/)
 
-# 質問
-[ディスコードサーバー](https://discord.com/invite/Mfn8HRhUfm) で受け付けています
+# ディスコードサーバー
+[マイクラ技術者コミュニティ](https://discord.com/invite/ddtjSc6KJv)
 
 # 使い方
 動画での説明は[コチラ](https://www.youtube.com/watch?v=cGPpEfAxdDg)
