@@ -9,7 +9,7 @@
 クラフターズコロニーは[コチラ](https://minecraft-mcworld.com/86891/)
 
 # ディスコードサーバー
-[マイクラ技術者コミュニティ](https://discord.com/invite/ddtjSc6KJv)
+質問等は[コチラ](https://discord.com/invite/Mfn8HRhUfm)まで
 
 # 使い方
 動画での説明は[コチラ](https://www.youtube.com/watch?v=cGPpEfAxdDg)
