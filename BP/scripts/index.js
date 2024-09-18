@@ -1,45 +1,12 @@
-import { system, world } from "@minecraft/server";
-import * as Chair from "./components/chair";
-import { selectBlocks } from "./config";
+import { world } from "@minecraft/server";
+import { CommandHandler } from "./libs/commandHandler";
+import { commandConfig, selectBlocks } from "./config";
+import { Chair } from "./libs/chair";
 
-world.afterEvents.worldInitialize.subscribe(() => {
-    Chair.killAll();
-});
+const commandHandler = new CommandHandler(commandConfig.path, commandConfig.setting, commandConfig.commands, true);
 
 world.beforeEvents.chatSend.subscribe(ev => {
-    const { sender: player, message } = ev;
-
-    if (message === "sit") {
-        ev.cancel = true;
-
-        const { x, y, z } = player.location;
-        const dimensionId = player.dimension.id;
-        const dimension = world.getDimension(dimensionId);
-        const downblock = dimension.getBlock({ x: x, y: y - 1, z: z });
-        const upblock = dimension.getBlock({ x: x, y: y + 1, z: z });
-        let location;
-
-        if (player.sit) return;
-        if (player.isSneaking) return;
-        if (!upblock.isAir) return;
-        if (downblock.isAir) return;
-        if (y > Math.floor(y)) {
-            location = { x: x, y: y - 0.13, z: z };
-        } else {
-            location = { x: x, y: downblock.y + 0.8, z: z };
-        }
-
-        player.sit = true;
-        Chair.sit(player, location);
-    } else if (message === "coff") {
-        ev.cancel = true;
-
-        const chair = Chair.get(player);
-        
-        if (chair) {
-            Chair.kill(chair);
-        }
-    }
+    commandHandler.check(ev);
 });
 
 world.beforeEvents.playerInteractWithBlock.subscribe(ev => {
@@ -57,23 +24,5 @@ world.beforeEvents.playerInteractWithBlock.subscribe(ev => {
     if (!checkBlock.isAir) return;
     if (itemStack) return;
 
-    player.sit = true;
-    Chair.sit(player, location);
-});
-
-world.beforeEvents.playerLeave.subscribe(ev => {
-    const { player } = ev;
-    const chair = Chair.get(player);
-
-    if (chair) {
-        Chair.kill(chair);
-    }
-});
-
-system.runInterval(() => {
-    const players = world.getAllPlayers();
-
-    for (const player of players) {
-        Chair.teleport(player);
-    }
+    new Chair(player).sit(location);
 });
