@@ -9,12 +9,10 @@ export const commandConfig = {
 
     commands: [
         {
-            name: "sit",
-            description: "イスに座ります"
+            name: "sit"
         },
         {
-            name: "coff",
-            description: "イスから強制的に降ります"
+            name: "coff"
         }
     ]
 }

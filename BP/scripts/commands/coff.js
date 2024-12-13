@@ -1,13 +1,14 @@
-import { Player, world } from "@minecraft/server";
+import { Block, Entity, Player, world } from "@minecraft/server";
 
 /**
- * @param {Player} player 
  * @param {string[]} args 
+ * @param {{ player: Player?, entity: Entity?, initiator: Entity?, block: Block? }} ev 
  */
-export function run(player, args) {
+export function run(args, ev) {
+    const { player, entity, initiator, block } = ev;
     const dimensionIds = ["overworld", "nether", "the_end"];
 
-    for (const dimensionId of dimensionIds) {
+    for (const dimensionId of dimensionIds) {   
         const dimension = world.getDimension(dimensionId);
         const chairs = dimension.getEntities({ type: "chair:chair" });
 
