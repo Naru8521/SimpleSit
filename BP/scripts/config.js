@@ -3,8 +3,8 @@ export const commandConfig = {
     path: "../commands",
 
     setting: {
-        prefix: "",
-        id: ""
+        prefixs: [""],
+        ids: []
     },
 
     commands: [

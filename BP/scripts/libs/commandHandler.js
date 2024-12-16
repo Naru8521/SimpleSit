@@ -1,4 +1,4 @@
-import { ChatSendAfterEvent, ChatSendBeforeEvent, ScriptEventCommandMessageAfterEvent } from "@minecraft/server";
+import { ChatSendAfterEvent, ChatSendBeforeEvent, Player, ScriptEventCommandMessageAfterEvent } from "@minecraft/server";
 
 /**
  * @typedef {string} CommandsPath 
@@ -6,8 +6,8 @@ import { ChatSendAfterEvent, ChatSendBeforeEvent, ScriptEventCommandMessageAfter
 
 /**
  * @typedef {Object} CommandSetting
- * @property {string[]} prefix
- * @property {string[]} id
+ * @property {string[]} prefixs
+ * @property {string[]} ids
  */
 
 /**
@@ -51,7 +51,7 @@ export default class CommandHandler {
                         console.log(`${strings[i]} がコマンドとして登録されました。`);
                     }
                 } catch (e) {
-                    console.error(`${strings[i]} は ${this.commandsPath} 内にないため処理されません。`);
+                    console.error(e);
                 }
             }
         })();
@@ -87,10 +87,10 @@ export default class CommandHandler {
                     if (ev instanceof ChatSendBeforeEvent | ChatSendAfterEvent) {
                         module.run(remaining, { player: ev.sender });
                     } else {
-                        module.run(remaining, { entity: ev.sourceEntity, initiator: ev.initiator, block: ev.sourceBlock });
+                        module.run(remaining, { player: ev.sourceEntity instanceof Player ? ev.sourceEntity : undefined, entity: ev.sourceEntity, initiator: ev.initiator, block: ev.sourceBlock });
                     }
                 } catch (e) {
-
+                    console.error(e);
                 }
             })();
         }
@@ -109,34 +109,42 @@ function getCommandDetails(commandsPath, commandSetting, commands, ev) {
     const commandStrings = getCommandStrings(commands);
 
     if (ev instanceof ChatSendBeforeEvent || ev instanceof ChatSendAfterEvent) {
-        let { message } = ev;
+        let { message, sender } = ev;
 
-        if (message.startsWith(commandSetting.prefix)) {
-            message = message.replace(commandSetting.prefix, "").trim();
+        for (const prefix of commandSetting.prefixs) {
+            if (message.startsWith(prefix)) {
+                message = message.replace(prefix, "").trim();
 
-            const parts = message.split(" ");
-
-            for (let i = 0; i < commandPaths.length; i++) {
-                const commandParts = commandStrings[i].split(" ");
-
-                if (parts.length >= commandParts.length && parts.slice(0, commandParts.length).every((part, index) => part === commandParts[index])) {
-                    const remaining = parts.slice(commandParts.length);
-
-                    return { path: commandPaths[i], remaining };
-                }
-            }
-        } else {
-            const { id, message } = ev;
-
-            if (id === commandSetting.id) {
                 const parts = message.split(" ");
 
                 for (let i = 0; i < commandPaths.length; i++) {
                     const commandParts = commandStrings[i].split(" ");
-    
+
+                    if (commands[i].tags.length > 0 && !sender.getTags().some(commands[i].tags)) {
+                        return undefined;
+                    }
+
                     if (parts.length >= commandParts.length && parts.slice(0, commandParts.length).every((part, index) => part === commandParts[index])) {
                         const remaining = parts.slice(commandParts.length);
-                        
+
+                        return { path: commandPaths[i], remaining };
+                    }
+                }
+            }
+        }
+    } else {
+        const { id, message } = ev;
+
+        for (const ida of commandSetting.ids) {
+            if (id === ida) {
+                const parts = message.split(" ");
+
+                for (let i = 0; i < commandPaths.length; i++) {
+                    const commandParts = commandStrings[i].split(" ");
+
+                    if (parts.length >= commandParts.length && parts.slice(0, commandParts.length).every((part, index) => part === commandParts[index])) {
+                        const remaining = parts.slice(commandParts.length);
+
                         return { path: commandPaths[i], remaining };
                     }
                 }
