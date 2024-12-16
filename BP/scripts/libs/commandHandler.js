@@ -1,4 +1,4 @@
-import { ChatSendAfterEvent, ChatSendBeforeEvent, Player, ScriptEventCommandMessageAfterEvent } from "@minecraft/server";
+import { ChatSendAfterEvent, ChatSendBeforeEvent, Player, ScriptEventCommandMessageAfterEvent, world } from "@minecraft/server";
 
 /**
  * @typedef {string} CommandsPath 
@@ -111,6 +111,8 @@ function getCommandDetails(commandsPath, commandSetting, commands, ev) {
     if (ev instanceof ChatSendBeforeEvent || ev instanceof ChatSendAfterEvent) {
         let { message, sender } = ev;
 
+        if (!commandSetting.prefixs || commandSetting.prefixs.length === 0) return undefined;
+
         for (const prefix of commandSetting.prefixs) {
             if (message.startsWith(prefix)) {
                 message = message.replace(prefix, "").trim();
@@ -120,12 +122,29 @@ function getCommandDetails(commandsPath, commandSetting, commands, ev) {
                 for (let i = 0; i < commandPaths.length; i++) {
                     const commandParts = commandStrings[i].split(" ");
 
-                    if (commands[i].tags.length > 0 && !sender.getTags().some(commands[i].tags)) {
-                        return undefined;
-                    }
-
                     if (parts.length >= commandParts.length && parts.slice(0, commandParts.length).every((part, index) => part === commandParts[index])) {
                         const remaining = parts.slice(commandParts.length);
+
+                        if (Array.isArray(commands[i].tags) && commands[i].tags.length > 0) {
+                            const commandTags = commands[i].tags;
+
+                            if (!sender.getTags().some(tag => commandTags.includes(tag))) {
+                                return undefined;
+                            }
+                        }
+
+                        if (commands[i].subCommands && commands[i].subCommands.length > 0) {
+                            for (const subCommand of commands[i].subCommands) {
+                                const subCommandTags = subCommand.tags || [];
+
+                                if (subCommandTags.length > 0 && !sender.getTags().some(tag => subCommandTags.includes(tag))) {
+                                    continue;
+                                }
+
+                                const remainingSubCommand = parts.slice(commandParts.length);
+                                return { path: commandPaths[i], remaining: remainingSubCommand };
+                            }
+                        }
 
                         return { path: commandPaths[i], remaining };
                     }
@@ -134,6 +153,8 @@ function getCommandDetails(commandsPath, commandSetting, commands, ev) {
         }
     } else {
         const { id, message } = ev;
+
+        if (!commandSetting.ids || commandSetting.ids.length === 0) return undefined;
 
         for (const ida of commandSetting.ids) {
             if (id === ida) {
