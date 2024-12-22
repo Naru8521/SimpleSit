@@ -4,7 +4,7 @@ export const commandConfig = {
 
     setting: {
         prefixs: [""],
-        ids: []
+        ids: ["b:c"]
     },
 
     commands: [
