@@ -13,7 +13,7 @@ export function run(args, ev) {
         const chairs = dimension.getEntities({ type: "chair:chair" });
 
         for (const chair of chairs) {
-            if (chair.nameTag.includes(player.id)) {
+            if (chair.playerId.includes(player.id)) {
                 chair.remove();
             }
         }
