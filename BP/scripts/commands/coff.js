@@ -8,13 +8,15 @@ export function run(args, ev) {
     const { player, entity, initiator, block } = ev;
     const dimensionIds = ["overworld", "nether", "the_end"];
 
-    for (const dimensionId of dimensionIds) {   
-        const dimension = world.getDimension(dimensionId);
-        const chairs = dimension.getEntities({ type: "chair:chair" });
-
-        for (const chair of chairs) {
-            if (chair.playerId.includes(player.id)) {
-                chair.remove();
+    if (player) {
+        for (const dimensionId of dimensionIds) {   
+            const dimension = world.getDimension(dimensionId);
+            const chairs = dimension.getEntities({ type: "chair:chair" });
+    
+            for (const chair of chairs) {
+                if (chair.nameTag.includes(player.id)) {
+                    chair.remove();
+                }
             }
         }
     }

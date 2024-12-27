@@ -1,21 +1,21 @@
-/** @type {import("./libs/commandHandler").CommandConfig} */
-export const commandConfig = {
-    path: "../commands",
+/** @type {import("./libs/commandHandler").CommandsPath} */
+export const commandsPath = "../commands";
 
-    setting: {
-        prefixs: [""],
-        ids: ["b:c"]
+/** @type {import("./libs/commandHandler").CommandSetting} */
+export const commandSetting = {
+    prefixs: [""],
+    ids: []
+};
+
+/** @type {import("./libs/commandHandler").Commands} */
+export const commands = [
+    {
+        name: "sit"
     },
-
-    commands: [
-        {
-            name: "sit"
-        },
-        {
-            name: "coff"
-        }
-    ]
-}
+    {
+        name: "coff"
+    }
+];
 
 export const selectBlocks = [
     "stairs",
@@ -23,4 +23,4 @@ export const selectBlocks = [
     "slab2",
     "slab3",
     "slab4"
-]
+];

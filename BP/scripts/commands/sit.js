@@ -8,5 +8,7 @@ import { Chair } from "../libs/chair";
 export function run(args, ev) {
     const { player, entity, initiator, block } = ev;
 
-    new Chair(player).sit();
+    if (player) {
+        new Chair(player).sit();
+    }
 }

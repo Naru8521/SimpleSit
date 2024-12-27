@@ -46,7 +46,7 @@ export class Chair {
             const playerId = this.player.id;
             const chair = this.dimension.spawnEntity("chair:chair", this.location);
 
-            chair.playerId = `chair_${playerId}`;
+            chair.nameTag = `chair_${playerId}`;
             chair.getComponent("rideable").addRider(this.player);
             this.chair = chair;
             this.intervalId = system.runInterval(() => {

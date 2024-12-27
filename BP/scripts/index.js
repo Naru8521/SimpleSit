@@ -1,9 +1,9 @@
 import { world } from "@minecraft/server";
 import CommandHandler from "./libs/commandHandler";
-import { commandConfig, selectBlocks } from "./config";
+import { commands, commandSetting, commandsPath, selectBlocks } from "./config";
 import { Chair } from "./libs/chair";
 
-const commandHandler = new CommandHandler(commandConfig.path, commandConfig.setting, commandConfig.commands, true);
+const commandHandler = new CommandHandler(commandsPath, commandSetting, commands, true);
 
 world.beforeEvents.chatSend.subscribe(ev => {
     commandHandler.handleCommand(ev);
