@@ -1,7 +1,7 @@
 export const config = {
     command: {
         prefixes: ["!"],
-        ids: ["c:a"],
+        ids: ["chair:id"],
         tags: ["op"]
     }
 };
