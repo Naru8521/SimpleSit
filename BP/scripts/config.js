@@ -1,23 +1,12 @@
-/** @type {import("./libs/commandHandler").CommandsPath} */
-export const commandsPath = "../commands";
-
-/** @type {import("./libs/commandHandler").CommandSetting} */
-export const commandSetting = {
-    prefixs: [""],
-    ids: []
+export const config = {
+    command: {
+        prefixes: ["!"],
+        ids: ["c:a"],
+        tags: ["op"]
+    }
 };
 
-/** @type {import("./libs/commandHandler").Commands} */
-export const commands = [
-    {
-        name: "sit"
-    },
-    {
-        name: "coff"
-    }
-];
-
-export const selectBlocks = [
+export const selectBlockIds = [
     "stairs",
     "slab",
     "slab2",

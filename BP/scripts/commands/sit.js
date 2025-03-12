@@ -1,14 +1,18 @@
-import { Block, Entity, Player } from "@minecraft/server";
-import { Chair } from "../libs/chair";
+import { config } from "../config";
+import commandManager from "../modules/CommandManager";
+import { Chair } from "../modules/Chair";
 
-/**
- * @param {string[]} args 
- * @param {{ player: Player?, entity: Entity?, initiator: Entity?, block: Block? }} ev 
- */
-export function run(args, ev) {
-    const { player, entity, initiator, block } = ev;
+export function loadSitCommand() {
+    const sitCommand = commandManager.register({
+        prefixes: config.command.prefixes,
+        ids: config.command.ids,
+        name: "sit",
+        description: "その場に座る"
+    });
 
-    if (player) {
-        new Chair(player).sit();
-    }
+    console.log("load sit command.");
+    
+    sitCommand.onCommand((args, player) => {
+        Chair.sit(player);
+    });
 }

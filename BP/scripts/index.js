@@ -1,30 +1,75 @@
-import { world } from "@minecraft/server";
-import CommandHandler from "./libs/commandHandler";
-import { commands, commandSetting, commandsPath, selectBlocks } from "./config";
-import { Chair } from "./libs/chair";
+import { system, world } from "@minecraft/server";
+import { loadSitCommand } from "./commands/sit";
+import { Chair } from "./modules/Chair";
+import playerGetOffAfterEvent from "./events/playerGetOffAfterEvent";
+import { loadStandAllCommand } from "./commands/standAll";
+import { loadStandCommand } from "./commands/stand";
+import { selectBlockIds } from "./config";
 
-const commandHandler = new CommandHandler(commandsPath, commandSetting, commands, true);
+// コマンドを読み込む
+system.run(() => {
+    loadSitCommand();
+    loadStandCommand();
+    loadStandAllCommand();
+    console.log("load all command.");
 
-world.beforeEvents.chatSend.subscribe(ev => {
-    commandHandler.handleCommand(ev);
+    Chair.standAll();
+});
+
+system.runInterval(() => {
+    const chairEntities = Chair.getAllChairs();
+
+    for (const chairEntity of chairEntities) {
+        /** @type {ChairData} */
+        const { playerId, location } = JSON.parse(chairEntity.getDynamicProperty("data"));
+        const player = getPlayerById(playerId);
+
+        // プレイヤーが存在しない場合、エンティティを削除する
+        if (!player) {
+            chairEntity.remove();
+            continue;
+        }
+
+        const rotation = player.getRotation();
+
+        chairEntity.teleport(location);
+        chairEntity.setRotation(rotation);
+    }
+});
+
+playerGetOffAfterEvent.subscribe(ev => {
+    const { entity, player } = ev;
+
+    if (entity.typeId === "chair:chair") {
+        Chair.stand(player);
+    }
 });
 
 world.beforeEvents.playerInteractWithBlock.subscribe(ev => {
-    const { block, player, itemStack, isFirstEvent } = ev;
-    const dimensionId = player.dimension.id;
-    const dimension = world.getDimension(dimensionId);
-    const checkBlock = dimension.getBlock({ x: block.x, y: block.y + 1, z: block.z });
-    const lastName = block.typeId.split("_")[block.typeId.split("_").length - 1];
-    const location = { x: block.x + 0.5, y: block.y + 0.25, z: block.z + 0.5 };
+    const { player, block, itemStack, isFirstEvent } = ev;
+    const location = { x: block.x + 0.5, y: block.y, z: block.z + 0.5 };
 
+    // 最初のクリックでない場合
     if (!isFirstEvent) return;
-    if (player.sit) return;
+
+    // ブロックが下を向いている時
     if (block.permutation.getAllStates()["upside_down_bit"]) return;
+
+    // 上付きブロックであった時
     if (block.permutation.getAllStates()["minecraft:vertical_half"] === "top") return;
-    if (!selectBlocks.includes(lastName)) return;
-    if (player.isSneaking) return;
-    if (!checkBlock.isAir) return;
+
+    // selectBlockIdsに含まれないブロックIDであった時
+    if (!selectBlockIds.some(id => block.typeId.includes(id))) return;
+
+    // アイテムを持っている時
     if (itemStack) return;
 
-    new Chair(player).sit(location);
+    Chair.sit(player, location);
 });
+
+/**
+ * @param {string} playerId 
+ */
+function getPlayerById(playerId) {
+    return world.getAllPlayers().filter(player => player.id === playerId)[0];
+}
