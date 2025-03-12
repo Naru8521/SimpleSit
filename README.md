@@ -42,4 +42,4 @@ __インポートができたら、``ベータAPI``をワールド設定から�
 
 # 応用
 すべてのプレイヤーを強制的に座らせる  
-/execute as @a at @s run scriptevent chair:id sit
+```/execute as @a at @s run scriptevent chair:id sit```
