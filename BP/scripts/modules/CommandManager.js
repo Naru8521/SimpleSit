@@ -45,7 +45,7 @@ import { ChatSendBeforeEvent, ScriptEventCommandMessageAfterEvent, system, world
  * @param {Block?} block 
  * @param {ErrorType} errorType 
  * @param {string} message 
- * @param {extra?} any 
+ * @param {any} [extra]
  */
 
 /**
@@ -80,12 +80,15 @@ class Command {
         this.tags = tags || [];
         this.onCommandHandler = null;
         this.onScriptCommandHandler = null;
-        /** 内部で利用するエラーハンドラ */
         this._onCommandError = null;
     }
 
     /**
      * エラー発生時の内部処理
+     * @param {Player?} player 
+     * @param {Entity?} initiator 
+     * @param {Entity?} entity
+     * @param {Block?} block 
      * @param {string} errorType 
      * @param {string} message 
      * @param {any} [extra]
@@ -193,17 +196,14 @@ class Command {
      * @returns {boolean} 
      */
     executeCommand(rawArgs, sender) {
-        // タグのチェック：コマンドに必要なタグが設定されている場合、プレイヤーがいずれかを持っているか確認する
         if (this.tags.length > 0) {
             let allowed = false;
-            
             for (const tag of this.tags) {
                 if (sender.hasTag(tag)) {
                     allowed = true;
                     break;
                 }
             }
-
             if (!allowed) {
                 this._error(sender, undefined, undefined, undefined, ErrorType.TAG, `プレイヤーはこのコマンドを実行する権限がありません。（必要なタグ: ${this.tags.join(", ")}）`);
                 return false;
@@ -230,21 +230,6 @@ class Command {
      * @returns {boolean}
      */
     executeScriptCommand(rawArgs, initiator, sourceEntity, sourceBlock) {
-        // initiatorがプレイヤーであればタグのチェックを実施
-        if (this.tags.length > 0 && initiator && typeof initiator.hasTag === "function") {
-            let allowed = false;
-            for (const tag of this.tags) {
-                if (initiator.hasTag(tag)) {
-                    allowed = true;
-                    break;
-                }
-            }
-            if (!allowed) {
-                this._error(undefined, initiator, sourceEntity, sourceBlock, ErrorType.TAG, `実行者はこのコマンドを実行する権限がありません。（必要なタグ: ${this.tags.join(", ")}）`);
-                return false;
-            }
-        }
-
         if (!this.onScriptCommandHandler) return false;
 
         const { parsedArgs, valid } = this.parseArgs(undefined, initiator, sourceEntity, sourceBlock, rawArgs, this.args);
@@ -260,8 +245,6 @@ class Command {
 class CommandManager {
     constructor() {
         this.commands = new Map();
-        // CommandManager側のエラーハンドラは各コマンドへ伝播させます
-        this._onCommandError = null;
 
         world.beforeEvents.chatSend.subscribe(ev => {
             handleChatCommand(ev, this.commands);
@@ -284,14 +267,12 @@ class CommandManager {
         }
 
         const command = new Command(prefixes, ids, name, description, args, tags);
-        // CommandManager に設定されたエラーハンドラを各コマンドに伝播
-        command.onCommandError(this._onCommandError);
-
         prefixes.forEach(prefix => {
             this.commands.set(`${prefix}${name}`, command);
         });
+
         ids.forEach(id => {
-            this.commands.set(id, command);
+            this.commands.set(`${id}${name}`, command);
         });
         return command;
     }
@@ -301,14 +282,6 @@ class CommandManager {
      */
     getCommands() {
         return [...this.commands.values()];
-    }
-
-    /**
-     * エラー発生時のコールバックを登録する
-     * @param {(errorType: string, message: string, extra?: any) => void} callback 
-     */
-    onCommandError(callback) {
-        this._onCommandError = callback;
     }
 }
 
@@ -325,7 +298,6 @@ function handleChatCommand(ev, commands) {
     if (commands.has(commandKey)) {
         const command = commands.get(commandKey);
         const executed = command.executeCommand(args, sender);
-
         if (executed) ev.cancel = true;
     }
 }
@@ -337,10 +309,12 @@ function handleChatCommand(ev, commands) {
  */
 function handleScriptEventCommand(ev, commands) {
     const { id, message, initiator, sourceEntity, sourceBlock } = ev;
-    const args = message.trim().split(/\s+/);
+    const firstWord = message.trim().split(/\s+/)[0] || "";
+    const commandKey = `${id}${firstWord}`;
+    const args = message.trim().split(/\s+/).slice(1);
 
-    if (commands.has(id)) {
-        const command = commands.get(id);
+    if (commands.has(commandKey)) {
+        const command = commands.get(commandKey);
 
         command.executeScriptCommand(args, initiator, sourceEntity, sourceBlock);
     }

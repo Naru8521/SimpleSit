@@ -1,6 +1,7 @@
 import { config } from "../config";
 import commandManager, { ErrorType } from "../modules/CommandManager";
 import { Chair } from "../modules/Chair";
+import { Player } from "@minecraft/server";
 
 export function loadStandAllCommand() {
     const standAllCommand = commandManager.register({
@@ -17,9 +18,14 @@ export function loadStandAllCommand() {
         Chair.standAll();
     });
 
+    standAllCommand.onScriptCommand((args, initiator, sourceEntity, sourceBlock) => {
+        Chair.standAll();
+    });
+
     standAllCommand.onCommandError((player, initiator, entity, block, errorType, message, extra) => {
         if (errorType === ErrorType.TAG) {
-            player.sendMessage("§cエラー: このコマンドを実行する権限が付与されていません。");
+            if (player) player.sendMessage("§cエラー: このコマンドを実行する権限が付与されていません。");
+            if (entity && entity instanceof Player) entity.sendMessage("§cエラー: このコマンドを実行する権限が付与されていません。");
         }
     });
 }
