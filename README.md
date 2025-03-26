@@ -44,8 +44,8 @@
 すべてのプレイヤーを強制的に座らせる  
 ```/execute as @a at @s run scriptevent chair:id sit```
 
-特定のプレイヤーを強制的に立たせる
+特定のプレイヤーを強制的に立たせる  
 ```/execute at @s run scriptevent chair:id stand```
 
-すべてのプレイヤーを強制的に立たせる
+すべてのプレイヤーを強制的に立たせる  
 ```/execute as @a at @s run scriptevent chair:id standAll```
