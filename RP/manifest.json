@@ -2,17 +2,17 @@
     "format_version": 2,
     "header": {
         "description": "階段やハーフブロック、その場で座ることができます\n製作:なるる\nYouTube:なるる-Naruru",
-        "name": "Chair ver1.4.0",
+        "name": "Chair ver1.5.0",
         "uuid": "97225dcd-5568-4c11-82ef-e2a7d034d0bb",
-        "version": [1, 4, 0],
-        "min_engine_version": [1, 21, 62]
+        "version": [1, 5, 0],
+        "min_engine_version": [1, 21, 70]
     },
     "modules": [
         {
             "description": "",
             "type": "resources",
             "uuid": "53e8144c-a34d-48c5-a204-d092586ac43e",
-            "version": [1, 4, 0]
+            "version": [1, 5, 0]
         }
     ]
 }

@@ -84,24 +84,6 @@ class Command {
     }
 
     /**
-     * エラー発生時の内部処理
-     * @param {Player?} player 
-     * @param {Entity?} initiator 
-     * @param {Entity?} entity
-     * @param {Block?} block 
-     * @param {string} errorType 
-     * @param {string} message 
-     * @param {any} [extra]
-     */
-    _error(player, initiator, entity, block, errorType, message, extra) {
-        if (this._onCommandError) {
-            this._onCommandError(player, initiator, entity, block, errorType, message, extra);
-        } else {
-            console.error(message, extra);
-        }
-    }
-
-    /**
      * コマンド実行時のハンドラを設定する
      * @param {OnCommandHandler} onCommandHandler
      */
@@ -124,122 +106,154 @@ class Command {
     onCommandError(onCommandErrorHandler) {
         this._onCommandError = onCommandErrorHandler;
     }
+}
 
-    /**
-     * @param {Player?} player 
-     * @param {Entity?} initiator 
-     * @param {Entity?} entity
-     * @param {Block?} block 
-     * @param {string[]} rawArgs
-     * @param {CommandArgument[]} argDefs
-     * @returns {{parsedArgs: ParsedCommandArgs, valid: boolean}}
-     */
-    parseArgs(player, initiator, entity, block, rawArgs, argDefs) {
-        const parsedArgs = {};
+/**
+ * エラー発生時の内部処理
+ * @param {Command} command 
+ * @param {Player} player 
+ * @param {Entity?} initiator 
+ * @param {Entity?} entity
+ * @param {Block?} block 
+ * @param {string} errorType 
+ * @param {string} message 
+ * @param {any} [extra]
+ */
+function _error(command, player, initiator, entity, block, errorType, message, extra) {
+    if (command._onCommandError) {
+        command._onCommandError(player, initiator, entity, block, errorType, message, extra);
+    } else {
+        console.error(message, extra);
+    }
+}
 
-        if (argDefs.length === 0) {
-            if (rawArgs.length === 0) {
-                return { parsedArgs, valid: true };
-            } else {
-                this._error(player, initiator, entity, block, ErrorType.ARGS, `このコマンドは引数を受け付けませんが、余分な引数が渡されました。`);
-                return { parsedArgs, valid: false };
-            }
+/**
+ * @param {Command} command 
+ * @param {Player?} player 
+ * @param {Entity?} initiator 
+ * @param {Entity?} entity
+ * @param {Block?} block 
+ * @param {string[]} rawArgs
+ * @param {CommandArgument[]} argDefs
+ * @returns {{parsedArgs: ParsedCommandArgs, valid: boolean}}
+ */
+function parseArgs(command, player, initiator, entity, block, rawArgs, argDefs) {
+    const parsedArgs = {};
+
+    if (argDefs.length === 0) {
+        if (rawArgs.length === 0) {
+            return { parsedArgs, valid: true };
+        } else {
+            _error(command, player, initiator, entity, block, ErrorType.ARGS, `このコマンドは引数を受け付けませんが、余分な引数が渡されました。`);
+
+            return { parsedArgs, valid: false };
         }
+    }
 
-        const commandName = rawArgs.shift();
-        const matchedArg = argDefs.find(arg => arg.name === commandName);
+    const commandName = rawArgs.shift();
+    const matchedArg = argDefs.find(arg => arg.name === commandName);
 
-        if (!matchedArg) {
-            this._error(player, initiator, entity, block, ErrorType.ARGS, `不正な引数: ${commandName}`);
+    if (!matchedArg) {
+        _error(command, player, initiator, entity, block, ErrorType.ARGS, `不正な引数: ${commandName}`);
+
+        return { parsedArgs: {}, valid: false };
+    }
+
+    if (matchedArg.args && matchedArg.args.length > 0) {
+        parsedArgs[matchedArg.name] = {};
+
+        if (rawArgs.length !== matchedArg.args.length) {
+            _error(command, player, initiator, entity, block, ErrorType.ARGS, `Incorrect number of arguments for ${matchedArg.name} (required: ${matchedArg.args.length}, received: ${rawArgs.length})`);
+
             return { parsedArgs: {}, valid: false };
         }
 
-        if (matchedArg.args && matchedArg.args.length > 0) {
-            parsedArgs[matchedArg.name] = {};
+        for (const argDef of matchedArg.args) {
+            let value = rawArgs.shift();
 
-            if (rawArgs.length !== matchedArg.args.length) {
-                this._error(player, initiator, entity, block, ErrorType.ARGS, `Incorrect number of arguments for ${matchedArg.name} (required: ${matchedArg.args.length}, received: ${rawArgs.length})`);
-                return { parsedArgs: {}, valid: false };
-            }
+            if (argDef.type === "number") {
+                value = Number(value);
 
-            for (const argDef of matchedArg.args) {
-                let value = rawArgs.shift();
-
-                if (argDef.type === "number") {
-                    value = Number(value);
-                    if (Number.isNaN(value)) {
-                        this._error(player, initiator, entity, block, ErrorType.ARGS, `Error parsing number: ${argDef.name}`);
-                        return { parsedArgs: {}, valid: false };
-                    }
-                } else if (argDef.type === "boolean") {
-                    if (value !== "true" && value !== "false") {
-                        this._error(player, initiator, entity, block, ErrorType.ARGS, `Error parsing Boolean: ${argDef.name}`);
-                        return { parsedArgs: {}, valid: false };
-                    }
-                    value = value === "true";
+                if (Number.isNaN(value)) {
+                    _error(command, player, initiator, entity, block, ErrorType.ARGS, `Error parsing number: ${argDef.name}`);
+                    return { parsedArgs: {}, valid: false };
+                }
+            } else if (argDef.type === "boolean") {
+                if (value !== "true" && value !== "false") {
+                    _error(command, player, initiator, entity, block, ErrorType.ARGS, `Error parsing Boolean: ${argDef.name}`);
+                    return { parsedArgs: {}, valid: false };
                 }
 
-                parsedArgs[matchedArg.name][argDef.name] = value;
+                value = value === "true";
             }
-        } else if (rawArgs.length > 0) {
-            this._error(player, initiator, entity, block, ErrorType.ARGS, `${matchedArg.name} has no arguments but has extra arguments`);
-            return { parsedArgs: {}, valid: false };
-        }
 
-        return { parsedArgs, valid: true };
+            parsedArgs[matchedArg.name][argDef.name] = value;
+        }
+    } else if (rawArgs.length > 0) {
+        _error(command, player, initiator, entity, block, ErrorType.ARGS, `${matchedArg.name} has no arguments but has extra arguments`);
+
+        return { parsedArgs: {}, valid: false };
     }
 
-    /**
-     * チャットコマンドを実行する
-     * @param {string[]} rawArgs
-     * @param {Player} sender
-     * @returns {boolean} 
-     */
-    executeCommand(rawArgs, sender) {
-        if (this.tags.length > 0) {
-            let allowed = false;
-            for (const tag of this.tags) {
-                if (sender.hasTag(tag)) {
-                    allowed = true;
-                    break;
-                }
-            }
-            if (!allowed) {
-                this._error(sender, undefined, undefined, undefined, ErrorType.TAG, `プレイヤーはこのコマンドを実行する権限がありません。（必要なタグ: ${this.tags.join(", ")}）`);
-                return false;
+    return { parsedArgs, valid: true };
+}
+
+/**
+ * チャットコマンドを実行する
+ * @param {Command} command 
+ * @param {string[]} rawArgs
+ * @param {Player} sender
+ * @returns {boolean} 
+ */
+function executeCommand(command, rawArgs, sender) {
+    if (command.tags.length > 0) {
+        let allowed = false;
+
+        for (const tag of command.tags) {
+            if (sender.hasTag(tag)) {
+                allowed = true;
+                break;
             }
         }
 
-        if (!this.onCommandHandler) return false;
-
-        const { parsedArgs, valid } = this.parseArgs(sender, undefined, undefined, undefined, rawArgs, this.args);
-        if (!valid) {
+        if (!allowed) {
+            _error(command, sender, undefined, undefined, undefined, ErrorType.TAG, `プレイヤーはこのコマンドを実行する権限がありません。（必要なタグ: ${this.tags.join(", ")}）`);
             return false;
         }
-
-        this.onCommandHandler(parsedArgs, sender);
-        return true;
     }
 
-    /**
-     * スクリプトコマンドを実行する
-     * @param {string[]} rawArgs 
-     * @param {Entity} initiator 
-     * @param {Entity} sourceEntity 
-     * @param {Block} sourceBlock 
-     * @returns {boolean}
-     */
-    executeScriptCommand(rawArgs, initiator, sourceEntity, sourceBlock) {
-        if (!this.onScriptCommandHandler) return false;
+    if (!command.onCommandHandler) return false;
 
-        const { parsedArgs, valid } = this.parseArgs(undefined, initiator, sourceEntity, sourceBlock, rawArgs, this.args);
-        if (!valid) {
-            return false;
-        }
+    const { parsedArgs, valid } = parseArgs(command, sender, undefined, undefined, undefined, rawArgs, command.args);
 
-        this.onScriptCommandHandler(parsedArgs, initiator, sourceEntity, sourceBlock);
-        return true;
+    if (!valid) {
+        return false;
     }
+
+    command.onCommandHandler(parsedArgs, sender);
+    return true;
+}
+
+/**
+ * スクリプトコマンドを実行する
+ * @param {Command} command
+ * @param {string[]} rawArgs 
+ * @param {Entity} initiator 
+ * @param {Entity} sourceEntity 
+ * @param {Block} sourceBlock 
+ * @returns {boolean}
+ */
+function executeScriptCommand(command, rawArgs, initiator, sourceEntity, sourceBlock) {
+    if (!command.onScriptCommandHandler) return false;
+
+    const { parsedArgs, valid } = parseArgs(command, undefined, initiator, sourceEntity, sourceBlock, rawArgs, this.args);
+    
+    if (!valid) {
+        return false;
+    }
+
+    command.onScriptCommandHandler(parsedArgs, initiator, sourceEntity, sourceBlock);
+    return true;
 }
 
 class CommandManager {
@@ -262,11 +276,13 @@ class CommandManager {
         if (prefixes.length === 0 && ids.length === 0) {
             throw new Error("prefixes or ids are not defined");
         }
+        
         if (!name || name.trim() === "") {
             throw new Error("name is not defined.");
         }
 
         const command = new Command(prefixes, ids, name, description, args, tags);
+        
         prefixes.forEach(prefix => {
             this.commands.set(`${prefix}${name}`, command);
         });
@@ -274,6 +290,7 @@ class CommandManager {
         ids.forEach(id => {
             this.commands.set(`${id}${name}`, command);
         });
+        
         return command;
     }
 
@@ -297,7 +314,7 @@ function handleChatCommand(ev, commands) {
 
     if (commands.has(commandKey)) {
         const command = commands.get(commandKey);
-        const executed = command.executeCommand(args, sender);
+        const executed = executeCommand(command, args, sender);
         if (executed) ev.cancel = true;
     }
 }
@@ -316,7 +333,7 @@ function handleScriptEventCommand(ev, commands) {
     if (commands.has(commandKey)) {
         const command = commands.get(commandKey);
 
-        command.executeScriptCommand(args, initiator, sourceEntity, sourceBlock);
+        executeScriptCommand(command, args, initiator, sourceEntity, sourceBlock);
     }
 }
 
