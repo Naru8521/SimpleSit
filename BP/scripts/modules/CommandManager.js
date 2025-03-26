@@ -246,7 +246,7 @@ function executeCommand(command, rawArgs, sender) {
 function executeScriptCommand(command, rawArgs, initiator, sourceEntity, sourceBlock) {
     if (!command.onScriptCommandHandler) return false;
 
-    const { parsedArgs, valid } = parseArgs(command, undefined, initiator, sourceEntity, sourceBlock, rawArgs, this.args);
+    const { parsedArgs, valid } = parseArgs(command, undefined, initiator, sourceEntity, sourceBlock, rawArgs, command.args);
     
     if (!valid) {
         return false;
