@@ -328,15 +328,13 @@ function handleChatCommand(ev, commands) {
                     commandKey = parts[0];
                     args = parts.slice(1);
                 }
+                
                 break;
             }
         }
 
         if (commandKey) break;
     }
-
-    console.log(commandKey);
-    console.log(args);
 
     if (commands.has(commandKey)) {
         const command = commands.get(commandKey);
