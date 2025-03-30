@@ -145,49 +145,40 @@ function parseArgs(command, player, initiator, entity, block, rawArgs, argDefs) 
         return { parsedArgs, valid: true, extraArgs: rawArgs };
     }
 
-    const commandName = rawArgs.shift();
-    const matchedArg = argDefs.find(arg => arg.name === commandName);
+    for (const argDef of argDefs) {
+        let value = rawArgs.shift();
 
-    if (!matchedArg) {
-        _error(command, player, initiator, entity, block, ErrorType.ARGS, `不正な引数: ${commandName}`);
-        return { parsedArgs: {}, valid: false, extraArgs: [] };
-    }
-
-    if (matchedArg.args && matchedArg.args.length > 0) {
-        parsedArgs[matchedArg.name] = {};
-
-        for (const argDef of matchedArg.args) {
-            let value = rawArgs.shift();
-
-            if (value === undefined) {
-                _error(command, player, initiator, entity, block, ErrorType.ARGS, `引数が不足しています: ${argDef.name}`);
-                return { parsedArgs: {}, valid: false, extraArgs: [] };
-            }
-
-            if (argDef.type === "number") {
-                value = Number(value);
-
-                if (Number.isNaN(value)) {
-                    _error(command, player, initiator, entity, block, ErrorType.ARGS, `数値に変換できません: ${argDef.name}`);
-                    return { parsedArgs: {}, valid: false, extraArgs: [] };
-                }
-            } else if (argDef.type === "boolean") {
-                if (value !== "true" && value !== "false") {
-                    _error(command, player, initiator, entity, block, ErrorType.ARGS, `ブール値に変換できません: ${argDef.name}`);
-                    return { parsedArgs: {}, valid: false, extraArgs: [] };
-                }
-
-                value = value === "true";
-            }
-
-            parsedArgs[matchedArg.name][argDef.name] = value;
+        if (value === undefined) {
+            _error(command, player, initiator, entity, block, ErrorType.ARGS, `引数が不足しています: ${argDef.name}`);
+            return { parsedArgs: {}, valid: false, extraArgs: [] };
         }
 
-        extraArgs.push(...rawArgs);
+        if (!argDef.type) {
+            if (value !== argDef.name) {
+                _error(command, player, initiator, entity, block, ErrorType.ARGS, `不正な引数です: ${value}, 期待される値: ${argDef.name}`);
+                return { parsedArgs: {}, valid: false, extraArgs: [] };
+            }
+            continue;
+        }
 
-    } else {
-        extraArgs.push(...rawArgs);
+        if (argDef.type === "number") {
+            value = Number(value);
+            if (Number.isNaN(value)) {
+                _error(command, player, initiator, entity, block, ErrorType.ARGS, `数値に変換できません: ${argDef.name}`);
+                return { parsedArgs: {}, valid: false, extraArgs: [] };
+            }
+        } else if (argDef.type === "boolean") {
+            if (value !== "true" && value !== "false") {
+                _error(command, player, initiator, entity, block, ErrorType.ARGS, `ブール値に変換できません: ${argDef.name}`);
+                return { parsedArgs: {}, valid: false, extraArgs: [] };
+            }
+            value = value === "true";
+        }
+
+        parsedArgs[argDef.name] = value;
     }
+
+    extraArgs.push(...rawArgs);
 
     return { parsedArgs, valid: true, extraArgs };
 }
@@ -328,7 +319,7 @@ function handleChatCommand(ev, commands) {
                     commandKey = parts[0];
                     args = parts.slice(1);
                 }
-                
+
                 break;
             }
         }
