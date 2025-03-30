@@ -113,7 +113,7 @@ class Command {
  * @param {Command} command 
  * @param {Player} player 
  * @param {Entity?} initiator 
- * @param {Entity?} entity
+ * @param {Entity?} entity 
  * @param {Block?} block 
  * @param {string} errorType 
  * @param {string} message 
@@ -135,19 +135,14 @@ function _error(command, player, initiator, entity, block, errorType, message, e
  * @param {Block?} block 
  * @param {string[]} rawArgs
  * @param {CommandArgument[]} argDefs
- * @returns {{parsedArgs: ParsedCommandArgs, valid: boolean}}
+ * @returns {{parsedArgs: ParsedCommandArgs, valid: boolean, extraArgs: string[]}}
  */
 function parseArgs(command, player, initiator, entity, block, rawArgs, argDefs) {
     const parsedArgs = {};
+    const extraArgs = [];
 
     if (argDefs.length === 0) {
-        if (rawArgs.length === 0) {
-            return { parsedArgs, valid: true };
-        } else {
-            _error(command, player, initiator, entity, block, ErrorType.ARGS, `このコマンドは引数を受け付けませんが、余分な引数が渡されました。`);
-
-            return { parsedArgs, valid: false };
-        }
+        return { parsedArgs, valid: true, extraArgs: rawArgs };
     }
 
     const commandName = rawArgs.shift();
@@ -155,33 +150,31 @@ function parseArgs(command, player, initiator, entity, block, rawArgs, argDefs) 
 
     if (!matchedArg) {
         _error(command, player, initiator, entity, block, ErrorType.ARGS, `不正な引数: ${commandName}`);
-
-        return { parsedArgs: {}, valid: false };
+        return { parsedArgs: {}, valid: false, extraArgs: [] };
     }
 
     if (matchedArg.args && matchedArg.args.length > 0) {
         parsedArgs[matchedArg.name] = {};
 
-        if (rawArgs.length !== matchedArg.args.length) {
-            _error(command, player, initiator, entity, block, ErrorType.ARGS, `Incorrect number of arguments for ${matchedArg.name} (required: ${matchedArg.args.length}, received: ${rawArgs.length})`);
-
-            return { parsedArgs: {}, valid: false };
-        }
-
         for (const argDef of matchedArg.args) {
             let value = rawArgs.shift();
+
+            if (value === undefined) {
+                _error(command, player, initiator, entity, block, ErrorType.ARGS, `引数が不足しています: ${argDef.name}`);
+                return { parsedArgs: {}, valid: false, extraArgs: [] };
+            }
 
             if (argDef.type === "number") {
                 value = Number(value);
 
                 if (Number.isNaN(value)) {
-                    _error(command, player, initiator, entity, block, ErrorType.ARGS, `Error parsing number: ${argDef.name}`);
-                    return { parsedArgs: {}, valid: false };
+                    _error(command, player, initiator, entity, block, ErrorType.ARGS, `数値に変換できません: ${argDef.name}`);
+                    return { parsedArgs: {}, valid: false, extraArgs: [] };
                 }
             } else if (argDef.type === "boolean") {
                 if (value !== "true" && value !== "false") {
-                    _error(command, player, initiator, entity, block, ErrorType.ARGS, `Error parsing Boolean: ${argDef.name}`);
-                    return { parsedArgs: {}, valid: false };
+                    _error(command, player, initiator, entity, block, ErrorType.ARGS, `ブール値に変換できません: ${argDef.name}`);
+                    return { parsedArgs: {}, valid: false, extraArgs: [] };
                 }
 
                 value = value === "true";
@@ -189,13 +182,14 @@ function parseArgs(command, player, initiator, entity, block, rawArgs, argDefs) 
 
             parsedArgs[matchedArg.name][argDef.name] = value;
         }
-    } else if (rawArgs.length > 0) {
-        _error(command, player, initiator, entity, block, ErrorType.ARGS, `${matchedArg.name} has no arguments but has extra arguments`);
 
-        return { parsedArgs: {}, valid: false };
+        extraArgs.push(...rawArgs);
+
+    } else {
+        extraArgs.push(...rawArgs);
     }
 
-    return { parsedArgs, valid: true };
+    return { parsedArgs, valid: true, extraArgs };
 }
 
 /**
@@ -217,20 +211,20 @@ function executeCommand(command, rawArgs, sender) {
         }
 
         if (!allowed) {
-            _error(command, sender, undefined, undefined, undefined, ErrorType.TAG, `プレイヤーはこのコマンドを実行する権限がありません。（必要なタグ: ${this.tags.join(", ")}）`);
+            _error(command, sender, undefined, undefined, undefined, ErrorType.TAG, `このコマンドを実行する権限がありません。（必要なタグ: ${command.tags.join(", ")}）`);
             return false;
         }
     }
 
     if (!command.onCommandHandler) return false;
 
-    const { parsedArgs, valid } = parseArgs(command, sender, undefined, undefined, undefined, rawArgs, command.args);
+    const { parsedArgs, valid, extraArgs } = parseArgs(command, sender, undefined, undefined, undefined, rawArgs, command.args);
 
     if (!valid) {
         return false;
     }
 
-    command.onCommandHandler(parsedArgs, sender);
+    command.onCommandHandler({ ...parsedArgs, extraArgs }, sender);
     return true;
 }
 
@@ -246,13 +240,21 @@ function executeCommand(command, rawArgs, sender) {
 function executeScriptCommand(command, rawArgs, initiator, sourceEntity, sourceBlock) {
     if (!command.onScriptCommandHandler) return false;
 
-    const { parsedArgs, valid } = parseArgs(command, undefined, initiator, sourceEntity, sourceBlock, rawArgs, command.args);
-    
+    const { parsedArgs, valid, extraArgs } = parseArgs(
+        command, 
+        undefined, 
+        initiator, 
+        sourceEntity, 
+        sourceBlock, 
+        rawArgs, 
+        command.args
+    );
+
     if (!valid) {
         return false;
     }
 
-    command.onScriptCommandHandler(parsedArgs, initiator, sourceEntity, sourceBlock);
+    command.onScriptCommandHandler({ ...parsedArgs, extraArgs }, initiator, sourceEntity, sourceBlock);
     return true;
 }
 
@@ -309,12 +311,37 @@ class CommandManager {
  */
 function handleChatCommand(ev, commands) {
     const { sender, message } = ev;
-    const args = message.trim().split(/\s+/);
-    const commandKey = args.shift();
+    const parts = message.trim().split(/\s+/);
+
+    if (parts.length === 0) return;
+
+    let commandKey = "";
+    let args = [];
+
+    for (const [key, command] of commands.entries()) {
+        for (const prefix of command.prefixes) {
+            if (message.startsWith(prefix)) {
+                if (prefix.endsWith(" ")) {
+                    commandKey = parts.slice(0, 2).join(" ");
+                    args = parts.slice(2);
+                } else {
+                    commandKey = parts[0];
+                    args = parts.slice(1);
+                }
+                break;
+            }
+        }
+
+        if (commandKey) break;
+    }
+
+    console.log(commandKey);
+    console.log(args);
 
     if (commands.has(commandKey)) {
         const command = commands.get(commandKey);
         const executed = executeCommand(command, args, sender);
+
         if (executed) ev.cancel = true;
     }
 }
