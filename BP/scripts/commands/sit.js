@@ -1,27 +1,34 @@
+import { CommandPermissionLevel, CustomCommandRegistry, ItemStack, Player, world } from "@minecraft/server";
 import { config } from "../config";
-import commandManager from "../modules/CommandManager";
-import { Chair } from "../modules/Chair";
-import { Player, world } from "@minecraft/server";
+import Chair from "../modules/Chair";
 
-export function loadSitCommand() {
-    const sitCommand = commandManager.register({
-        prefixes: config.command.prefixes,
-        ids: config.command.ids,
-        name: "sit",
-        description: "その場に座る"
-    });
+/**
+ * @param {CustomCommandRegistry} customCommandRegistry 
+ */
+export default function loadSitCommand(customCommandRegistry) {
+    customCommandRegistry.registerCommand({
+        name: `${config.commandPrefix}:sit`,
+        description: "sit in place.",
+        permissionLevel: CommandPermissionLevel.Any,
+        mandatoryParameters: [],
+        optionalParameters: []
+    }, (origin, ...args) => {
+        const { sourceEntity } = origin;
 
-    console.log("load sit command.");
-    
-    sitCommand.onCommand((args, player) => {
-        Chair.sit(player);
-    });
+        // 実行がプレイヤーであった時
+        if (sourceEntity instanceof Player) {
+            const player = sourceEntity;
+            /** @type {ChairSettings} */
+            const { allowSitTags } = JSON.parse(world.getDynamicProperty(config.settingsDyId));
 
-    sitCommand.onScriptCommand((args, initiator, sourceEntity, sourceBlock) => {
-        if (initiator instanceof Player) {
-            Chair.sit(initiator);
-        } else if (sourceEntity instanceof Player) {
-            Chair.sit(sourceEntity);
+            if (allowSitTags.length > 0) {
+                const tags = player.getTags();
+                const canSit = allowSitTags.some(tag => tags.includes(tag));
+
+                if (!canSit) return;
+            }
+
+            Chair.sit(player);
         }
     });
 }

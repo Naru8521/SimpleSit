@@ -1,9 +1,13 @@
 export const config = {
-    command: {
-        prefixes: ["!"],
-        ids: ["chair:id"],
-        tags: ["op"]
-    }
+    commandPrefix: "sit",
+    settingsDyId: "sit:settings"
+};
+
+/** @type {ChairSettings} */
+export const defSetting = {
+    allowSitTags: [],
+    allowStandTags: [],
+    forceStandByCommandOnly: false
 };
 
 export const selectBlockIds = [

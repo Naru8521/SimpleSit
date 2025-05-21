@@ -56,7 +56,7 @@ system.runInterval(() => {
                 player,
                 entity: target
             };
-            
+
             ridingPlayers.delete(player.id);
             callbacks.forEach((_, callback) => callback(events));
         }

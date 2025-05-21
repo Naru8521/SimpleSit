@@ -1,26 +1,34 @@
+import { CommandPermissionLevel, CustomCommandRegistry, ItemStack, Player, world } from "@minecraft/server";
 import { config } from "../config";
-import commandManager from "../modules/CommandManager";
-import { Chair } from "../modules/Chair";
+import Chair from "../modules/Chair";
 
-export function loadStandCommand() {
-    const standCommand = commandManager.register({
-        prefixes: config.command.prefixes,
-        ids: config.command.ids,
-        name: "stand",
-        description: "その場で立つ"
-    });
+/**
+ * @param {CustomCommandRegistry} customCommandRegistry 
+ */
+export default function loadStandCommand(customCommandRegistry) {
+    customCommandRegistry.registerCommand({
+        name: `${config.commandPrefix}:stand`,
+        description: "stand up.",
+        permissionLevel: CommandPermissionLevel.Any,
+        mandatoryParameters: [],
+        optionalParameters: []
+    }, (origin, ...args) => {
+        const { sourceEntity } = origin;
 
-    console.log("load stand command.");
+        // 実行がプレイヤーであった時
+        if (sourceEntity instanceof Player) {
+            const player = sourceEntity;
+            /** @type {ChairSettings} */
+            const { allowStandTags } = JSON.parse(world.getDynamicProperty(config.settingsDyId));
 
-    standCommand.onCommand((args, player) => {
-        Chair.stand(player);
-    });
+            if (allowStandTags.length > 0) {
+                const tags = player.getTags();
+                const canStand = allowStandTags.some(tag => tags.includes(tag));
 
-    standCommand.onScriptCommand((args, initiator, sourceEntity, sourceBlock) => {
-        if (initiator instanceof Player) {
-            Chair.stand(initiator);
-        } else if (sourceEntity instanceof Player) {
-            Chair.stand(sourceEntity);
+                if (!canStand) return;
+            }
+
+            Chair.stand(player);
         }
     });
 }

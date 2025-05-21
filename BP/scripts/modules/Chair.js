@@ -1,41 +1,29 @@
-import { DimensionTypes, Entity, Player, system, world } from "@minecraft/server";
+import { Dimension, DimensionTypes, Entity, EntityComponentTypes, Player, system, world } from "@minecraft/server";
 
-export class Chair {
+export default class Chair {
     /**
      * プレイヤーを座らせる
      * @param {Player} player 
      * @param {import("@minecraft/server").Vector3} location 
      */
     static sit(player, location) {
+        const dimension = player.dimension;
+
+        if (
+            !this.canPlayerSit(player) ||
+            !this.canSitAtLocation(dimension, player.location)
+        ) return;
+
+        // locationが未定義だった時、プレイヤーの座標を代入する
+        // ブロックの高さに座席がくるように位置を調整する
+        if (!location) location = { x: player.location.x, y: player.location.y - 0.13, z: player.location.z };
+        else location = { x: location.x, y: location.y + 0.35, z: location.z };
+
         system.run(() => {
-            const dimension = player.dimension;
-            const copyLocation = location ? {...location} : player.location;
-
-            // locationが未定義だった時、プレイヤーの座標を代入する
-            // ブロックの高さに座席がくるように位置を調整する
-            if (!location) location = { x: player.location.x, y: player.location.y - 0.13, z: player.location.z };
-            else location = { x: location.x, y: location.y + 0.35, z: location.z };
-
-            // 既に座っている時、立たせる
-            if (this.isSit(player)) this.stand(player);
-
-            // スニークしている時
-            if (player.isSneaking) return;
-
-            // 座ろうとしている座標の上が空気出ない時
-            const upBlock = dimension.getBlock({ x: copyLocation.x, y: copyLocation.y + 1, z: copyLocation.z });
-            if (!upBlock.isAir) return;
-
-            // 座ろうとしている座標の下が空気の時
-            const downBlock = dimension.getBlock({ x: copyLocation.x, y: copyLocation.y - 1, z: copyLocation.z });
-            if (downBlock.isAir) return;
-
             // イスとなるエンティティを召喚する
             const chairEntity = dimension.spawnEntity("chair:chair", location);
-            const chairRideable = chairEntity.getComponent("rideable");
 
-            // プレイヤーを座らせる
-            chairRideable.addRider(player);
+            this.entityRide(chairEntity, player);
 
             /**
              * データを入れる
@@ -47,7 +35,7 @@ export class Chair {
             };
             chairEntity.setDynamicProperty("data", JSON.stringify(data));
 
-            // 座ったことを知らせる
+            // 座ったことを保存する
             player.setDynamicProperty("sit", true);
         });
     }
@@ -97,7 +85,40 @@ export class Chair {
      * @returns {boolean}
      */
     static isSit(player) {
-        return player.getDynamicProperty("sit");
+        return !!player.getDynamicProperty("sit");
+    }
+
+    /**
+     * 指定された場所が座れる場所かをチェック
+     * @param {Dimension} dimension 
+     * @param {import("@minecraft/server").Vector3} location 
+     * @returns {boolean}
+     */
+    static canSitAtLocation(dimension, location) {
+        // 座ろうとしている座標の上が空気出ない時
+        const upBlock = dimension.getBlock({ x: location.x, y: location.y + 1, z: location.z });
+        if (!upBlock.isAir) return false;
+
+        // 座ろうとしている座標の下が空気の時
+        const downBlock = dimension.getBlock({ x: location.x, y: location.y - 1, z: location.z });
+        if (downBlock.isAir) return false;
+
+        return true;
+    }
+
+    /**
+     * プレイヤーが座れる状態かをチェック
+     * @param {Player} player 
+     * @returns {boolean}
+     */
+    static canPlayerSit(player) {
+        // 既に座っている時
+        if (this.isSit(player)) return false;
+
+        // スニークしている時
+        if (player.isSneaking) return false;
+
+        return true;
     }
 
     /**
@@ -136,5 +157,20 @@ export class Chair {
         }
 
         return chairs.flat();
+    }
+
+    /**
+     * エンティティがエンティティに乗る
+     * @param {Entity} entity 
+     * @param {Entity} rider 
+     */
+    static entityRide(entity, rider) {
+        try {
+            const entityRideable = entity.getComponent(EntityComponentTypes.Rideable);
+
+            if (entityRideable) {
+                entityRideable.addRider(rider);
+            }
+        } catch { }
     }
 }
