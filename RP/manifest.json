@@ -2,12 +2,12 @@
     "format_version": 2,
     "header": {
         "description": "階段やハーフブロック、その場で座ることができます\n製作:なるる\nYouTube:なるる-Naruru",
-        "name": "SimpleSit ver1.6.0",
+        "name": "SimpleSit ver1.6.1",
         "uuid": "97225dcd-5568-4c11-82ef-e2a7d034d0bb",
         "version": [
             1,
             6,
-            0
+            1
         ],
         "min_engine_version": [
             1,
@@ -23,7 +23,7 @@
             "version": [
                 1,
                 6,
-                0
+                1
             ]
         }
     ]
