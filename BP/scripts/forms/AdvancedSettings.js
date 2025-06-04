@@ -13,12 +13,12 @@ export default async function AdvancedSettingsForm(player) {
     const settings = JSON.parse(world.getDynamicProperty(config.settingsDyId));
     const form = new UI.ModalFormData();
 
-    form.title("Advanced settings");
-    form.toggle("OnlyStandCommand", {
+    form.title("%sit.form.title.text.advanced_settings");
+    form.toggle("%sit.form.popup.text.advanced_settings.onlyStandCommand", {
         defaultValue: settings.forceStandByCommandOnly,
-        tooltip: "Allows you to stand on command only."
+        tooltip: "%sit.form.popup.tooltip.text.advanced_settings.onlyStandCommand"
     });
-    form.submitButton("§lSave");
+    form.submitButton("§l%sit.form.buttons.text.save");
 
     const { formValues, canceled } = await form.show(player);
 

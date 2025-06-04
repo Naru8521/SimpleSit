@@ -25,10 +25,6 @@ system.beforeEvents.startup.subscribe(ev => {
     loadSettingsCommand(customCommandRegistry);
 });
 
-system.beforeEvents.shutdown.subscribe(ev => {
-    console.log("before shutsdown");
-});
-
 system.runInterval(() => {
     const chairEntities = Chair.getAllChairs();
 

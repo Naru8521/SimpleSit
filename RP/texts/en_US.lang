@@ -1,1 +1,31 @@
 action.hint.exit.chair:chair=Press SHIFT to dismount
+
+sit.form.title.text.settings=Sit settings
+sit.form.buttons.text.settings.allow_sit_tags=Allow sit tags
+sit.form.buttons.text.settings.allow_stand_tags=Allow stand tags
+sit.form.buttons.text.settings.advanced_settings=Advanced settings
+
+sit.form.title.text.advanced_settings=Advanced settings
+sit.form.popup.text.advanced_settings.onlyStandCommand=OnlyStandCommand
+sit.form.popup.tooltip.text.advanced_settings.onlyStandCommand=Allows you to stand on command only.
+
+sit.form.buttons.text.save=Save
+sit.form.buttons.text.add=Add
+sit.form.buttons.text.return=Return
+sit.form.buttons.text.addtag=Add tag
+
+sit.form.title.text.addtag=Add tag
+sit.form.title.text.edittag=Edit tag
+
+sit.form.popup.text.tag=Tag
+sit.form.popup.text.delete=Delete
+
+sit.form.title.text.allow_stand_tags=Tag list allowed to stand
+sit.form.label.text.allow_stand_tags=If empty, it is available to all players.
+sit.form.label.text.edit_allow_stand_tags=Edit tags that are allowed to stand.
+sit.form.label.text.add_allow_stand_tags=Add tags that are allowed to stand.
+
+sit.form.title.text.allow_sit_tags=Tag list allowed to sit
+sit.form.label.text.allow_sit_tags=If empty, it is available to all players.
+sit.form.label.text.edit_allow_sit_tags=Edit tags that are allowed to sit.
+sit.form.label.text.allow_sit_tags=Add tags that are allowed to sit.

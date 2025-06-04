@@ -10,10 +10,10 @@ import AdvancedSettingsForm from "./AdvancedSettings";
 export default async function SettingsMenuForm(player) {
     const form = new UI.ActionFormData();
 
-    form.title("Chair settings");
-    form.button("§lAllow sit tags");
-    form.button("§lAllow stand tags");
-    form.button("§lAdvanced settings");
+    form.title("%sit.form.title.text.settings");
+    form.button("§l%sit.form.buttons.text.settings.allow_sit_tags");
+    form.button("§l%sit.form.buttons.text.settings.allow_stand_tags");
+    form.button("§l%sit.form.buttons.text.settings.advanced_settings");
 
     const { selection, canceled } = await form.show(player);
 

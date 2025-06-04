@@ -11,15 +11,15 @@ export default async function StandTagsEditForm(player, selectIndex) {
     const settings = JSON.parse(world.getDynamicProperty(config.settingsDyId));
     const form = new UI.ModalFormData();
 
-    form.title("Edit tag");
-    form.label("Edit tags that are allowed to stand.");
-    form.textField("tag", "tag", {
+    form.title("%sit.form.title.text.edittag");
+    form.label("%sit.form.label.text.edit_allow_stand_tags");
+    form.textField("%sit.form.popup.text.tag", "tag", {
         defaultValue: settings.allowStandTags[selectIndex]
     });
-    form.toggle("delete", {
+    form.toggle("%sit.form.popup.text.delete", {
         defaultValue: false
     });
-    form.submitButton("§lSave");
+    form.submitButton("§l%sit.form.buttons.text.save");
 
     const { formValues, canceled } = await form.show(player);
 

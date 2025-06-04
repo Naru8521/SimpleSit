@@ -13,10 +13,10 @@ export default async function StandTagsListForm(player) {
     const { allowStandTags } = JSON.parse(world.getDynamicProperty(config.settingsDyId));
     const form = new UI.ActionFormData();
 
-    form.title("Tag list allowed to stand");
-    form.label("If empty, it is available to all players.");
-    form.button("§lReturn");
-    form.button("§lAdd tag");
+    form.title("%sit.form.title.text.allow_stand_tags");
+    form.label("%sit.form.label.text.allow_stand_tags");
+    form.button("§l%sit.form.buttons.text.return");
+    form.button("§l%sit.form.buttons.text.addtag");
 
     for (const allowTag of allowStandTags) {
         form.button(allowTag);

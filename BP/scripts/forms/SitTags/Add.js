@@ -11,12 +11,12 @@ export default async function SitTagsAddForm(player) {
     const settings = JSON.parse(world.getDynamicProperty(config.settingsDyId));
     const form = new UI.ModalFormData();
 
-    form.title("Add tag");
-    form.label("Add tags that are allowed to sit.");
-    form.textField("tag", "tag", {
+    form.title("%sit.form.title.text.addtag");
+    form.label("%sit.form.label.text.add_allow_sit_tags");
+    form.textField("%sit.form.popup.text.tag", "tag", {
         defaultValue: "",
     });
-    form.submitButton("§lAdd");
+    form.submitButton("§l%sit.form.buttons.text.add");
 
     const { formValues, canceled } = await form.show(player);
 

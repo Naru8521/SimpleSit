@@ -11,12 +11,12 @@ export default async function StandTagsAddForm(player) {
     const settings = JSON.parse(world.getDynamicProperty(config.settingsDyId));
     const form = new UI.ModalFormData();
 
-    form.title("Add tag");
-    form.label("Add tags that are allowed to stand.");
-    form.textField("tag", "tag", {
+    form.title("%sit.form.title.text.addtag");
+    form.label("%sit.form.label.text.add_allow_stand_tags");
+    form.textField("%sit.form.popup.text.tag", "tag", {
         defaultValue: ""
     });
-    form.submitButton("§lAdd");
+    form.submitButton("§l%sit.form.buttons.text.add");
 
     const { formValues, canceled } = await form.show(player);
 

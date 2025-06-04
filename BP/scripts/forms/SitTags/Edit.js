@@ -11,15 +11,15 @@ export default async function SitTagsEditForm(player, selectIndex) {
     const settings = JSON.parse(world.getDynamicProperty(config.settingsDyId));
     const form = new UI.ModalFormData();
 
-    form.title("Edit tag");
-    form.label("Edit tags that are allowed to sit.");
-    form.textField("tag", "tag", {
+    form.title("%sit.form.title.text.edittag");
+    form.label("%sit.form.label.text.edit_allow_sit_tags");
+    form.textField("%sit.form.popup.text.tag", "tag", {
         defaultValue: settings.allowSitTags[selectIndex],
     });
-    form.toggle("delete", {
+    form.toggle("%sit.form.popup.text.delete", {
         defaultValue: false
     });
-    form.submitButton("§lSave");
+    form.submitButton("§l%sit.form.buttons.text.save");
 
     const { formValues, canceled } = await form.show(player);
 
