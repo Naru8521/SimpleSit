@@ -55,6 +55,3 @@
 
 特定のプレイヤーを強制的に立たせる  
 ```/execute at @s run stand```
-
-すべてのプレイヤーを強制的に立たせる  
-```/execute as @a at @s run standall```
