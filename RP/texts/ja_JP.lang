@@ -1,31 +1,47 @@
+entity.chair:chair.name=イス
 action.hint.exit.chair:chair=スニークで立ち上がる
 
-sit.form.title.text.settings=Sit設定
-sit.form.buttons.text.settings.allow_sit_tags=座れるタグ一覧
-sit.form.buttons.text.settings.allow_stand_tags=立てるタグ一覧
-sit.form.buttons.text.settings.advanced_settings=詳細設定
+simplesit.form.settings.menu.title=設定
+simplesit.form.settings.menu.button.allow_sit_tags=座るコマンド許可タグ
+simplesit.form.settings.menu.button.allow_stand_tags=立ち上がりコマンド許可タグ
+simplesit.form.settings.menu.button.advanced_settings=詳細設定
 
-sit.form.title.text.advanced_settings=詳細設定
-sit.form.popup.text.advanced_settings.onlyStandCommand=OnlyStandCommand
-sit.form.popup.tooltip.text.advanced_settings.onlyStandCommand=許可されたとき、コマンドだけで立つことができる。
+simplesit.form.settings.advancedsettings.title=詳細設定
+simplesit.form.settings.advancedsettings.toggle.onlystandcommand=OnlyStandCommand
+simplesit.form.settings.advancedsettings.toggle.onlystandcommand.tooltip=許可されたとき、コマンドだけで立つことができる。
 
-sit.form.buttons.text.save=保存
-sit.form.buttons.text.add=追加
-sit.form.buttons.text.return=戻る
-sit.form.buttons.text.addtag=タグを追加
+simplesit.form.settings.standtagslist.title=立ち上がるコマンド許可タグリスト
+simplesit.form.settings.standtagslist.body=空の場合は、すべてのプレーヤーが利用できる。
 
-sit.form.title.text.addtag=タグを追加
-sit.form.title.text.edittag=タグを編集
+simplesit.form.settings.standtagsedit.title=タグ編集
+simplesit.form.settings.standtagsedit.label=立ち上がるコマンド許可タグを編集します。
+simplesit.form.settings.standtagsedit.tagname=タグ名
 
-sit.form.popup.text.tag=タグ
-sit.form.popup.text.delete=削除
+simplesit.form.settings.standtagsadd.title=タグ追加
+simplesit.form.settings.standtagsadd.label=立ち上がるコマンド許可タグを追加します。
+simplesit.form.settings.standtagsadd.tagname=タグ名
 
-sit.form.title.text.allow_stand_tags=立つのを許可されたタグリスト
-sit.form.label.text.allow_stand_tags=空の場合は、すべてのプレーヤーが利用できる。
-sit.form.label.text.edit_allow_stand_tags=立つことが許可されているタグを編集する。
-sit.form.label.text.add_allow_stand_tags=立つことが許可されているタグを追加する。
+simplesit.form.settings.sittagslist.title=座るコマンド許可タグリスト
+simplesit.form.settings.sittagslist.body=空の場合は、すべてのプレーヤーが利用できる。
 
-sit.form.title.text.allow_sit_tags=座るのを許可されたタグリスト
-sit.form.label.text.allow_sit_tags=空の場合は、すべてのプレーヤーが利用できる。
-sit.form.label.text.edit_allow_sit_tags=座ることが許可されているタグを編集する。
-sit.form.label.text.add_allow_sit_tags=座ることが許可されているタグを追加する。
+simplesit.form.settings.sittagsedit.title=タグ編集
+simplesit.form.settings.sittagsedit.label=座るコマンド許可タグを編集します。
+simplesit.form.settings.sittagsedit.tagname=タグ名
+
+simplesit.form.settings.sittagsadd.title=タグ追加
+simplesit.form.settings.sittagsadd.label=座るコマンド許可タグを追加します。
+simplesit.form.settings.sittagsadd.tagname=タグ名
+
+simplesit.form.settings.button.return=戻る
+simplesit.form.settings.button.add=追加
+simplesit.form.settings.button.save=保存
+simplesit.form.settings.toggle.delete=削除
+
+simplesit.command.settings.description=設定
+simplesit.command.sit.description=その場に座る
+simplesit.command.stand.description=立ち上がる
+simplesit.command.standall.description=全プレイヤーを立ち上がる
+
+simplesit.command.status.message.run.only.player=このコマンドはプレイヤー以外に使用できません。
+simplesit.command.status.message.not.allow.sit=座ることが許可されていません。
+simplesit.command.status.message.not.allow.stand=立ち上がることが許可されていません。

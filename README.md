@@ -8,9 +8,6 @@
 
 クラフターズコロニーは[コチラ](https://minecraft-mcworld.com/86891/)
 
-# ディスコードサーバー
-質問等は[コチラ](https://discord.com/invite/Mfn8HRhUfm)まで
-
 # 使い方
 動画での説明は[コチラ](https://www.youtube.com/watch?v=cGPpEfAxdDg)
 
@@ -36,10 +33,10 @@
 これらはチャット欄で実行してください。
 | コマンド  | 説明 |
 | ------------- | ------------- |
-| /sit:sit  | その場に座ります |
-| /sit:stand | 強制的に立ち上がります |
-| /sit:standall | 全プレイヤーを強制的に立ち上げさせます（権限が必要です） |
-| /sit:settings | SimpleSitの設定フォームを開きます（権限が必要です） |
+| /sit  | その場に座ります |
+| /stand | 強制的に立ち上がります |
+| /standall | 全プレイヤーを強制的に立ち上げさせます（権限が必要です） |
+| /settings | SimpleSitの設定フォームを開きます（権限が必要です） |
 
 # 設定フォーム
 ![img](https://github.com/Naru8521/SimpleSit/blob/main/assets/settings_form.png)  
@@ -54,10 +51,10 @@
 
 # 応用
 すべてのプレイヤーを強制的に座らせる  
-```/execute as @a at @s run sit:sit```
+```/execute as @a at @s run sit```
 
 特定のプレイヤーを強制的に立たせる  
-```/execute at @s run sit:stand```
+```/execute at @s run stand```
 
 すべてのプレイヤーを強制的に立たせる  
-```/execute as @a at @s run sit:standall```
+```/execute as @a at @s run standall```

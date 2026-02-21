@@ -1,18 +1,18 @@
 {
     "format_version": 2,
     "header": {
-        "description": "階段やハーフブロック、その場で座ることができます\n製作:なるる\nYouTube:なるる-Naruru",
-        "name": "SimpleSit ver1.6.2",
-        "uuid": "a435a09f-26d5-4f6d-ab19-11e4a7517d94",
+        "name": "SimpleSit v1.7.0",
+        "description": "階段やハーフブロック、その場で座ることができます\n製作:なるる\nYouTube:なるる",
+        "uuid": "476abec3-f54d-40f5-8df3-f571a0ef7246",
         "version": [
             1,
-            6,
-            2
+            7,
+            0
         ],
         "min_engine_version": [
             1,
-            21,
-            81
+            26,
+            1
         ]
     },
     "modules": [
@@ -20,22 +20,22 @@
             "description": "",
             "type": "script",
             "language": "javascript",
-            "uuid": "b91fb2c2-2b0e-495e-87a3-77811cf7b0b2",
+            "uuid": "1d5ae310-6d84-4865-a728-6b22d47983f9",
             "version": [
                 1,
-                6,
-                2
+                7,
+                0
             ],
             "entry": "scripts/index.js"
         }
     ],
     "dependencies": [
         {
-            "uuid": "97225dcd-5568-4c11-82ef-e2a7d034d0bb",
+            "uuid": "64312ab2-b3f6-413c-8488-074874d4f465",
             "version": [
                 1,
-                6,
-                2
+                7,
+                0
             ]
         },
         {

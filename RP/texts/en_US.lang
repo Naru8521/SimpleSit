@@ -1,31 +1,47 @@
-action.hint.exit.chair:chair=Press SHIFT to dismount
+entity.chair:chair.name=Chair
+action.hint.exit.chair:chair=Sneak to stand up
 
-sit.form.title.text.settings=Sit settings
-sit.form.buttons.text.settings.allow_sit_tags=Allow sit tags
-sit.form.buttons.text.settings.allow_stand_tags=Allow stand tags
-sit.form.buttons.text.settings.advanced_settings=Advanced settings
+simplesit.form.settings.menu.title=Settings
+simplesit.form.settings.menu.button.allow_sit_tags=Allowed Sit Command Tags
+simplesit.form.settings.menu.button.allow_stand_tags=Allowed Stand Command Tags
+simplesit.form.settings.menu.button.advanced_settings=Advanced Settings
 
-sit.form.title.text.advanced_settings=Advanced settings
-sit.form.popup.text.advanced_settings.onlyStandCommand=OnlyStandCommand
-sit.form.popup.tooltip.text.advanced_settings.onlyStandCommand=Allows you to stand on command only.
+simplesit.form.settings.advancedsettings.title=Advanced Settings
+simplesit.form.settings.advancedsettings.toggle.onlystandcommand=Only Stand by Command
+simplesit.form.settings.advancedsettings.toggle.onlystandcommand.tooltip=When enabled, players can only stand up using a command.
 
-sit.form.buttons.text.save=Save
-sit.form.buttons.text.add=Add
-sit.form.buttons.text.return=Return
-sit.form.buttons.text.addtag=Add tag
+simplesit.form.settings.standtagslist.title=Allowed Stand Command Tag List
+simplesit.form.settings.standtagslist.body=If empty, all players can use this command.
 
-sit.form.title.text.addtag=Add tag
-sit.form.title.text.edittag=Edit tag
+simplesit.form.settings.standtagsedit.title=Edit Tag
+simplesit.form.settings.standtagsedit.label=Edit the allowed stand command tag.
+simplesit.form.settings.standtagsedit.tagname=Tag Name
 
-sit.form.popup.text.tag=Tag
-sit.form.popup.text.delete=Delete
+simplesit.form.settings.standtagsadd.title=Add Tag
+simplesit.form.settings.standtagsadd.label=Add a new allowed stand command tag.
+simplesit.form.settings.standtagsadd.tagname=Tag Name
 
-sit.form.title.text.allow_stand_tags=Tag list allowed to stand
-sit.form.label.text.allow_stand_tags=If empty, it is available to all players.
-sit.form.label.text.edit_allow_stand_tags=Edit tags that are allowed to stand.
-sit.form.label.text.add_allow_stand_tags=Add tags that are allowed to stand.
+simplesit.form.settings.sittagslist.title=Allowed Sit Command Tag List
+simplesit.form.settings.sittagslist.body=If empty, all players can use this command.
 
-sit.form.title.text.allow_sit_tags=Tag list allowed to sit
-sit.form.label.text.allow_sit_tags=If empty, it is available to all players.
-sit.form.label.text.edit_allow_sit_tags=Edit tags that are allowed to sit.
-sit.form.label.text.allow_sit_tags=Add tags that are allowed to sit.
+simplesit.form.settings.sittagsedit.title=Edit Tag
+simplesit.form.settings.sittagsedit.label=Edit the allowed sit command tag.
+simplesit.form.settings.sittagsedit.tagname=Tag Name
+
+simplesit.form.settings.sittagsadd.title=Add Tag
+simplesit.form.settings.sittagsadd.label=Add a new allowed sit command tag.
+simplesit.form.settings.sittagsadd.tagname=Tag Name
+
+simplesit.form.settings.button.return=Back
+simplesit.form.settings.button.add=Add
+simplesit.form.settings.button.save=Save
+simplesit.form.settings.toggle.delete=Delete
+
+simplesit.command.settings.description=Open settings
+simplesit.command.sit.description=Sit down at your current position
+simplesit.command.stand.description=Stand up
+simplesit.command.standall.description=Make all players stand up
+
+simplesit.command.status.message.run.only.player=This command can only be used by a player.
+simplesit.command.status.message.not.allow.sit=You are not allowed to sit.
+simplesit.command.status.message.not.allow.stand=You are not allowed to stand up.
