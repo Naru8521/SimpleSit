@@ -6,7 +6,7 @@
 
 アドオンのダウンロードは[コチラ](https://github.com/Naru8521/SimpleSit/releases)
 
-クラフターズコロニーは[コチラ](https://minecraft-mcworld.com/86891/)
+クラフターズコロニーは[コチラ](https://minecraft-mcworld.com/204684/)
 
 # 使い方
 動画での説明は[コチラ](https://www.youtube.com/watch?v=cGPpEfAxdDg)
